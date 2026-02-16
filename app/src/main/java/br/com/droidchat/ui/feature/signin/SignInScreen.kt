@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,8 +24,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.droidchat.R
+import br.com.droidchat.ui.components.PrimaryButton
 import br.com.droidchat.ui.components.PrimaryTextField
 import br.com.droidchat.ui.theme.BackgroundGradient
+import br.com.droidchat.ui.theme.Dimens
 import br.com.droidchat.ui.theme.DroidChatTheme
 
 @Composable
@@ -36,7 +40,9 @@ private fun SignInScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundGradient),
+            .background(BackgroundGradient)
+            .padding(Dimens.medium)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -45,20 +51,19 @@ private fun SignInScreen() {
             contentDescription = null
         )
 
-        Spacer(Modifier.height(64.dp))
+        Spacer(Modifier.height(78.dp))
 
         var email by remember { mutableStateOf("") }
 
         PrimaryTextField(
             value = email,
             onValueChanged = { email = it },
-            modifier = Modifier.padding(horizontal = 16.dp),
             keyboardType = KeyboardType.Email,
             placeHolder = stringResource(R.string.feature_login_email),
             leadingIconRes = R.drawable.ic_envelope
         )
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(14.dp))
 
         var password by remember { mutableStateOf("") }
 
@@ -68,8 +73,19 @@ private fun SignInScreen() {
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
             placeHolder = stringResource(R.string.feature_login_password),
-            modifier = Modifier.padding(horizontal = 16.dp),
             leadingIconRes = R.drawable.ic_lock
+        )
+
+        Spacer(Modifier.height(98.dp))
+
+        var isLoading by remember { mutableStateOf(false) }
+
+        PrimaryButton(
+            isLoading = isLoading,
+            text = stringResource(R.string.feature_login_button),
+            onClick = {
+                isLoading = !isLoading
+            }
         )
     }
 }
