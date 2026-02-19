@@ -69,7 +69,8 @@ private fun SignInScreen(
             },
             keyboardType = KeyboardType.Email,
             placeHolder = stringResource(R.string.feature_login_email),
-            leadingIconRes = R.drawable.ic_envelope
+            leadingIconRes = R.drawable.ic_envelope,
+            errorMessage = formState.emailError?.let { stringResource(it) }
         )
 
         Spacer(Modifier.height(14.dp))
@@ -82,7 +83,8 @@ private fun SignInScreen(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
             placeHolder = stringResource(R.string.feature_login_password),
-            leadingIconRes = R.drawable.ic_lock
+            leadingIconRes = R.drawable.ic_lock,
+            errorMessage = formState.passwordError?.let { stringResource(it) }
         )
 
         Spacer(Modifier.height(98.dp))
