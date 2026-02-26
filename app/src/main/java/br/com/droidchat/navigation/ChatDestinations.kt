@@ -11,5 +11,5 @@ sealed interface ChatDestinations {
     data object SignInDestination : ChatDestinations
 
     @Serializable
-    data object SignOutDestination : ChatDestinations
+    data object SignUpDestination : ChatDestinations
 }

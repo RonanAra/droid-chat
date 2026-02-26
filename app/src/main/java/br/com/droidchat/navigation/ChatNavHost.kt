@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import br.com.droidchat.navigation.ChatDestinations.SignInDestination
-import br.com.droidchat.navigation.ChatDestinations.SignOutDestination
+import br.com.droidchat.navigation.ChatDestinations.SignUpDestination
 import br.com.droidchat.navigation.ChatDestinations.SplashDestination
 import br.com.droidchat.ui.feature.signin.SignInRoute
 import br.com.droidchat.ui.feature.splash.SplashRoute
@@ -31,10 +31,12 @@ fun ChatNavHost() {
         }
 
         composable<SignInDestination> {
-            SignInRoute()
+            SignInRoute(navigateToSignUp = {
+                navController.navigate(SignUpDestination)
+            })
         }
 
-        composable<SignOutDestination> {
+        composable<SignUpDestination> {
 
         }
     }
