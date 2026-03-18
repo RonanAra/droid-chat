@@ -15,6 +15,7 @@ import br.com.droidchat.navigation.ChatDestinations.SplashDestination
 import br.com.droidchat.navigation.extension.navSlideIn
 import br.com.droidchat.navigation.extension.navSlideOut
 import br.com.droidchat.ui.feature.signin.SignInRoute
+import br.com.droidchat.ui.feature.signup.SignUpRoute
 import br.com.droidchat.ui.feature.splash.SplashRoute
 
 @Composable
@@ -53,7 +54,7 @@ fun ChatNavHost() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("SignUp")
+                SignUpRoute()
             }
         }
     }
