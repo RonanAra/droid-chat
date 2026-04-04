@@ -24,6 +24,10 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import br.com.droidchat.DroidChatFileProvider
 import br.com.droidchat.R
 import br.com.droidchat.ui.theme.DroidChatTheme
 
@@ -42,10 +47,20 @@ fun ProfilePictureOptionsModalBottomSheet(
     onPictureSelected: (Uri) -> Unit,
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
+    val context = LocalContext.current
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let { onPictureSelected(it) }
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+           photoUri?.let { onPictureSelected(it) }
+        }
     }
 
     ModalBottomSheet(
@@ -57,7 +72,11 @@ fun ProfilePictureOptionsModalBottomSheet(
     ) {
         ProfilePictureOption(
             iconRes = R.drawable.ic_photo_camera,
-            labelRes = R.string.common_take_photo
+            labelRes = R.string.common_take_photo,
+            onClick = {
+                photoUri = DroidChatFileProvider.getImageUri(context.applicationContext)
+                photoUri?.let { cameraLauncher.launch(it) }
+            }
         )
 
         Spacer(Modifier.height(12.dp))
@@ -78,7 +97,7 @@ fun ProfilePictureOptionsModalBottomSheet(
 private fun ProfilePictureOption(
     @DrawableRes iconRes: Int,
     @StringRes labelRes: Int,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
