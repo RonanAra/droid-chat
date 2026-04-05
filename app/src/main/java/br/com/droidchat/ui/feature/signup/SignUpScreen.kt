@@ -1,6 +1,5 @@
 package br.com.droidchat.ui.feature.signup
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,11 +17,9 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -31,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.droidchat.R
 import br.com.droidchat.ui.components.PrimaryButton
 import br.com.droidchat.ui.components.ProfilePictureOptionsModalBottomSheet
@@ -41,17 +39,22 @@ import br.com.droidchat.ui.theme.DroidChatTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun SignUpRoute() {
-    SignUpScreen()
+fun SignUpRoute(
+    viewModel: SignUpViewModel = viewModel()
+) {
+    val state by viewModel.formState.collectAsState()
+    SignUpScreen(
+        state = state,
+        uiEvent = viewModel::onUiEvent
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SignUpScreen() {
-    var profilePictureSelectedUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    var showBottomSheet by remember { mutableStateOf(false) }
+private fun SignUpScreen(
+    state: SignUpFormState,
+    uiEvent: (SignUpFormEvent) -> Unit
+) {
     val sheetState: SheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -86,51 +89,86 @@ private fun SignUpScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ProfilePictureSelector(
-                        imageUri = profilePictureSelectedUri
+                        imageUri = state.profilePictureUri
                     ) {
-                        showBottomSheet = true
+                        uiEvent(SignUpFormEvent.ShowBottomSheet)
                     }
 
                     Spacer(Modifier.height(24.dp))
 
                     SecondaryTextField(
-                        value = "",
+                        value = state.firstName,
                         placeHolder = stringResource(R.string.feature_sign_up_first_name),
-                        onValueChanged = {}
+                        onValueChanged = { value ->
+                            uiEvent(
+                                SignUpFormEvent.OnFieldChanged(
+                                    type = SignUpFormFieldType.NAME,
+                                    value = value
+                                )
+                            )
+                        }
                     )
 
                     Spacer(Modifier.height(22.dp))
 
                     SecondaryTextField(
-                        value = "",
+                        value = state.lastName,
                         placeHolder = stringResource(R.string.feature_sign_up_last_name),
-                        onValueChanged = {}
+                        onValueChanged = { value ->
+                            uiEvent(
+                                SignUpFormEvent.OnFieldChanged(
+                                    type = SignUpFormFieldType.LAST_NAME,
+                                    value = value
+                                )
+                            )
+                        }
                     )
 
                     Spacer(Modifier.height(22.dp))
 
                     SecondaryTextField(
-                        value = "",
+                        value = state.email,
                         placeHolder = stringResource(R.string.feature_sign_up_email),
-                        onValueChanged = {},
+                        onValueChanged = { value ->
+                            uiEvent(
+                                SignUpFormEvent.OnFieldChanged(
+                                    type = SignUpFormFieldType.EMAIL,
+                                    value = value
+                                )
+                            )
+                        },
                         keyboardType = KeyboardType.Email
                     )
 
                     Spacer(Modifier.height(22.dp))
 
                     SecondaryTextField(
-                        value = "",
+                        value = state.password,
                         placeHolder = stringResource(R.string.feature_sign_up_password),
-                        onValueChanged = {},
+                        onValueChanged = { value ->
+                            uiEvent(
+                                SignUpFormEvent.OnFieldChanged(
+                                    type = SignUpFormFieldType.PASSWORD,
+                                    value = value
+                                )
+                            )
+                        },
                         keyboardType = KeyboardType.Password
                     )
 
                     Spacer(Modifier.height(22.dp))
 
                     SecondaryTextField(
-                        value = "",
+                        value = state.passwordConfirmation,
                         placeHolder = stringResource(R.string.feature_sign_up_password_confirmation),
-                        onValueChanged = {},
+                        onValueChanged = { value ->
+                            uiEvent(
+                                SignUpFormEvent.OnFieldChanged(
+                                    type = SignUpFormFieldType.PASSWORD_CONFIRMATION,
+                                    value = value
+                                )
+                            )
+                        },
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     )
@@ -139,24 +177,27 @@ private fun SignUpScreen() {
 
                     PrimaryButton(
                         text = stringResource(R.string.feature_sign_up_button),
-                        onClick = {}
+                        isLoading = state.isLoading,
+                        onClick = {
+                            uiEvent(SignUpFormEvent.Submit)
+                        }
                     )
                 }
             }
 
-            if (showBottomSheet) {
+            if (state.shouldShowProfilePictureBottomSheet) {
                 ProfilePictureOptionsModalBottomSheet(
                     onPictureSelected = { uri ->
-                        profilePictureSelectedUri = uri
+                        uiEvent(SignUpFormEvent.ProfilePhotoChanged(uri))
                         coroutineScope
                             .launch { sheetState.hide() }
                             .invokeOnCompletion {
                                 if (!sheetState.isVisible) {
-                                    showBottomSheet = false
+                                    uiEvent(SignUpFormEvent.HideBottomSheet)
                                 }
                             }
                     },
-                    onDismissRequest = { showBottomSheet = false }
+                    onDismissRequest = { uiEvent(SignUpFormEvent.HideBottomSheet) }
                 )
             }
         }
@@ -167,6 +208,9 @@ private fun SignUpScreen() {
 @Composable
 private fun Preview() {
     DroidChatTheme {
-        SignUpScreen()
+        SignUpScreen(
+            state = SignUpFormState(),
+            uiEvent = {}
+        )
     }
 }
