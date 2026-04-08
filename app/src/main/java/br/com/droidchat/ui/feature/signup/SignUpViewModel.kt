@@ -3,6 +3,7 @@ package br.com.droidchat.ui.feature.signup
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.droidchat.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,12 +50,18 @@ class SignUpViewModel : ViewModel() {
                 state.copy(lastName = value, lastNameError = null)
             }
 
-            SignUpFormFieldType.PASSWORD -> _formState.update { state ->
-                state.copy(password = value, passwordError = null)
+            SignUpFormFieldType.PASSWORD -> {
+                _formState.update { state ->
+                    state.copy(password = value, passwordError = null)
+                }
+                updatePasswordExtraText()
             }
 
-            SignUpFormFieldType.PASSWORD_CONFIRMATION -> _formState.update { state ->
-                state.copy(passwordConfirmation = value, passwordError = null)
+            SignUpFormFieldType.PASSWORD_CONFIRMATION -> {
+                _formState.update { state ->
+                    state.copy(passwordConfirmation = value, passwordError = null)
+                }
+                updatePasswordExtraText()
             }
         }
     }
@@ -71,6 +78,18 @@ class SignUpViewModel : ViewModel() {
     }
 
     private fun isValidForm(): Boolean = true
+
+    private fun updatePasswordExtraText() {
+        _formState.update { state ->
+            state.copy(
+                passwordExtraText = if (state.password.isNotEmpty() &&
+                    state.password == state.passwordConfirmation
+                ) {
+                    R.string.feature_sign_up_passwords_match
+                } else null
+            )
+        }
+    }
 
     private fun showProfilePictureBottomSheet(visibility: Boolean) {
         _formState.update { it.copy(shouldShowProfilePictureBottomSheet = visibility) }

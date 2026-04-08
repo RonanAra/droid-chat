@@ -16,4 +16,5 @@ data class SignUpFormState(
     @get:StringRes val lastNameError: Int? = null,
     @get:StringRes val passwordError: Int? = null,
     @get:StringRes val emailError: Int? = null,
+    @get:StringRes val passwordExtraText: Int? = null,
 )

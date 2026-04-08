@@ -143,14 +143,6 @@ private fun SignUpScreen(
 
                     Spacer(Modifier.height(22.dp))
 
-                    val extraTextResId = remember(state.password, state.passwordConfirmation) {
-                        if (state.password.isNotEmpty()
-                            && state.password == state.passwordConfirmation
-                        ) {
-                            R.string.feature_sign_up_passwords_match
-                        } else null
-                    }
-
                     SecondaryTextField(
                         value = state.password,
                         placeHolder = stringResource(R.string.feature_sign_up_password),
@@ -162,7 +154,7 @@ private fun SignUpScreen(
                                 )
                             )
                         },
-                        extraText = extraTextResId?.let { stringResource(it) },
+                        extraText = state.passwordExtraText?.let { stringResource(it) },
                         keyboardType = KeyboardType.Password
                     )
 
@@ -181,7 +173,7 @@ private fun SignUpScreen(
                         },
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done,
-                        extraText = extraTextResId?.let { stringResource(it) }
+                        extraText = state.passwordExtraText?.let { stringResource(it) }
                     )
 
                     Spacer(Modifier.height(36.dp))
