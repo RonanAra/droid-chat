@@ -19,6 +19,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -142,6 +143,14 @@ private fun SignUpScreen(
 
                     Spacer(Modifier.height(22.dp))
 
+                    val extraTextResId = remember(state.password, state.passwordConfirmation) {
+                        if (state.password.isNotEmpty()
+                            && state.password == state.passwordConfirmation
+                        ) {
+                            R.string.feature_sign_up_passwords_match
+                        } else null
+                    }
+
                     SecondaryTextField(
                         value = state.password,
                         placeHolder = stringResource(R.string.feature_sign_up_password),
@@ -153,6 +162,7 @@ private fun SignUpScreen(
                                 )
                             )
                         },
+                        extraText = extraTextResId?.let { stringResource(it) },
                         keyboardType = KeyboardType.Password
                     )
 
@@ -170,7 +180,8 @@ private fun SignUpScreen(
                             )
                         },
                         keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
+                        imeAction = ImeAction.Done,
+                        extraText = extraTextResId?.let { stringResource(it) }
                     )
 
                     Spacer(Modifier.height(36.dp))
