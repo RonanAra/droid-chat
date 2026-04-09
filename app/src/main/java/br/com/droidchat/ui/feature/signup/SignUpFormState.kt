@@ -11,10 +11,12 @@ data class SignUpFormState(
     val password: String = "",
     val passwordConfirmation: String = "",
     val isLoading: Boolean = false,
+    val hasError: Boolean = false,
     val shouldShowProfilePictureBottomSheet: Boolean = false,
     @get:StringRes val firstNameError: Int? = null,
     @get:StringRes val lastNameError: Int? = null,
     @get:StringRes val passwordError: Int? = null,
+    @get:StringRes val passwordConfirmationError: Int? = null,
     @get:StringRes val emailError: Int? = null,
     @get:StringRes val passwordExtraText: Int? = null,
 )

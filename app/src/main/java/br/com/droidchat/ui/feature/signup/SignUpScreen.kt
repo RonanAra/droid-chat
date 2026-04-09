@@ -19,7 +19,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +40,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpRoute(
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignUpViewModel = viewModel {
+        SignUpViewModel(SignUpFormValidator())
+    }
 ) {
     val state by viewModel.formState.collectAsState()
     SignUpScreen(
@@ -100,6 +101,12 @@ private fun SignUpScreen(
                     SecondaryTextField(
                         value = state.firstName,
                         placeHolder = stringResource(R.string.feature_sign_up_first_name),
+                        errorText = state.firstNameError?.let {
+                            stringResource(
+                                it,
+                                stringResource(R.string.feature_sign_up_first_name)
+                            )
+                        },
                         onValueChanged = { value ->
                             uiEvent(
                                 SignUpFormEvent.OnFieldChanged(
@@ -115,6 +122,12 @@ private fun SignUpScreen(
                     SecondaryTextField(
                         value = state.lastName,
                         placeHolder = stringResource(R.string.feature_sign_up_last_name),
+                        errorText = state.lastNameError?.let {
+                            stringResource(
+                                it,
+                                stringResource(R.string.feature_sign_up_last_name)
+                            )
+                        },
                         onValueChanged = { value ->
                             uiEvent(
                                 SignUpFormEvent.OnFieldChanged(
@@ -129,6 +142,7 @@ private fun SignUpScreen(
 
                     SecondaryTextField(
                         value = state.email,
+                        errorText = state.emailError?.let { stringResource(it) },
                         placeHolder = stringResource(R.string.feature_sign_up_email),
                         onValueChanged = { value ->
                             uiEvent(
@@ -145,6 +159,7 @@ private fun SignUpScreen(
 
                     SecondaryTextField(
                         value = state.password,
+                        errorText = state.passwordError?.let { stringResource(it) },
                         placeHolder = stringResource(R.string.feature_sign_up_password),
                         onValueChanged = { value ->
                             uiEvent(
@@ -163,6 +178,7 @@ private fun SignUpScreen(
                     SecondaryTextField(
                         value = state.passwordConfirmation,
                         placeHolder = stringResource(R.string.feature_sign_up_password_confirmation),
+                        errorText = state.passwordConfirmationError?.let { stringResource(it) },
                         onValueChanged = { value ->
                             uiEvent(
                                 SignUpFormEvent.OnFieldChanged(

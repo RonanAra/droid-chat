@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.droidchat.R
+import br.com.droidchat.ui.validator.FormValidator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SignUpViewModel : ViewModel() {
+class SignUpViewModel(
+    private val formValidator: FormValidator<SignUpFormState>
+) : ViewModel() {
 
     private val _formState = MutableStateFlow(SignUpFormState())
     val formState: StateFlow<SignUpFormState> = _formState.asStateFlow()
@@ -59,7 +62,7 @@ class SignUpViewModel : ViewModel() {
 
             SignUpFormFieldType.PASSWORD_CONFIRMATION -> {
                 _formState.update { state ->
-                    state.copy(passwordConfirmation = value, passwordError = null)
+                    state.copy(passwordConfirmation = value, passwordConfirmationError = null)
                 }
                 updatePasswordExtraText()
             }
@@ -77,7 +80,11 @@ class SignUpViewModel : ViewModel() {
         }
     }
 
-    private fun isValidForm(): Boolean = true
+    private fun isValidForm(): Boolean {
+        return formValidator.validate(_formState.value).also { state ->
+            _formState.update { state }
+        }.hasError.not()
+    }
 
     private fun updatePasswordExtraText() {
         _formState.update { state ->
