@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinKsp)
+    alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.kotlinSerialization)
 }
 
