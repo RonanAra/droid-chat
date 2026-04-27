@@ -4,16 +4,21 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.droidchat.R
+import br.com.droidchat.data.repository.AuthRepository
 import br.com.droidchat.ui.validator.FormValidator
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpViewModel(
-    private val formValidator: FormValidator<SignUpFormState>
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val formValidator: FormValidator<SignUpFormState>,
+    private val repository: AuthRepository
 ) : ViewModel() {
 
     private val _formState = MutableStateFlow(SignUpFormState())
