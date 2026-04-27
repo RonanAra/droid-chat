@@ -7,5 +7,6 @@ data class SignInFormState(
     @StringRes val emailError: Int? = null,
     val password: String = "",
     @StringRes val passwordError: Int? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val hasError: Boolean = false
 )

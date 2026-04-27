@@ -2,18 +2,17 @@ package br.com.droidchat.ui.feature.signin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.droidchat.R
-import dagger.hilt.android.lifecycle.HiltViewModel
+import br.com.droidchat.ui.validator.FormValidator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class SignInViewModel @Inject constructor() : ViewModel() {
+class SignInViewModel(
+    private val formValidator: FormValidator<SignInFormState>
+) : ViewModel() {
 
     private val _formState = MutableStateFlow(SignInFormState())
     val formState: StateFlow<SignInFormState> = _formState.asStateFlow()
@@ -56,15 +55,8 @@ class SignInViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun validateFields(): Boolean {
-        if (formState.value.email.isBlank()) {
-            _formState.update { it.copy(emailError = R.string.error_message_email_invalid) }
-            return false
-        }
-
-        if (formState.value.password.isBlank()) {
-            _formState.update { it.copy(passwordError = R.string.error_message_password_invalid) }
-            return false
-        }
-        return true
+        return formValidator.validate(_formState.value).also { state ->
+            _formState.update { state }
+        }.hasError.not()
     }
 }
