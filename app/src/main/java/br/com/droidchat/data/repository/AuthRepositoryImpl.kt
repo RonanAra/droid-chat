@@ -10,14 +10,14 @@ class AuthRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource
 ) : AuthRepository {
 
-    override suspend fun signUp(request: CreateAccount) {
+    override suspend fun signUp(account: CreateAccount) {
         return networkDataSource.signUp(
             request = CreateAccountRequest(
-                username = request.username,
-                password = request.password,
-                firstName = request.firstName,
-                lastName = request.lastName,
-                profilePictureId = request.profilePictureId
+                username = account.username,
+                password = account.password,
+                firstName = account.firstName,
+                lastName = account.lastName,
+                profilePictureId = account.profilePictureId
             )
         )
     }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.droidchat.data.repository.AuthRepository
 import br.com.droidchat.ui.validator.FormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import io.ktor.utils.io.printStack
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     private val formValidator: FormValidator<SignInFormState>,
-    private val repository: AuthRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _formState = MutableStateFlow(SignInFormState())
@@ -43,17 +43,24 @@ class SignInViewModel @Inject constructor(
     }
 
     private fun doLogin() {
-        // Replace this with real impl
         if (validateFields()) {
             viewModelScope.launch {
                 _formState.update { state ->
                     state.copy(isLoading = true)
                 }
 
-                delay(3000L)
+                try {
+                    authRepository.signIn(
+                        userName = _formState.value.email,
+                        password = _formState.value.password
+                    )
 
-                _formState.update { state ->
-                    state.copy(isLoading = false)
+                    _formState.update { state ->
+                        state.copy(isLoading = false)
+                    }
+                } catch (e: Exception) {
+                    // Handle error here
+                    e.printStack()
                 }
             }
         }

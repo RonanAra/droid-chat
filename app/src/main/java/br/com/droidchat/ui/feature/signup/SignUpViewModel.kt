@@ -5,9 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.droidchat.R
 import br.com.droidchat.data.repository.AuthRepository
+import br.com.droidchat.model.CreateAccount
 import br.com.droidchat.ui.validator.FormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import io.ktor.utils.io.printStack
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val formValidator: FormValidator<SignUpFormState>,
-    private val repository: AuthRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _formState = MutableStateFlow(SignUpFormState())
@@ -78,9 +79,24 @@ class SignUpViewModel @Inject constructor(
         if (isValidForm()) {
             viewModelScope.launch {
                 _formState.update { it.copy(isLoading = true) }
-                // Call api to Do signUp
-                delay(1500L)
-                _formState.update { it.copy(isLoading = false) }
+
+                try {
+                    val state = formState.value
+                    authRepository.signUp(
+                        account = CreateAccount(
+                            username = "",
+                            password = "",
+                            firstName = state.firstName,
+                            lastName = state.lastName,
+                            profilePictureId = null
+                        )
+                    )
+
+                    _formState.update { it.copy(isLoading = false) }
+                } catch (e: Exception) {
+                    // Handle error here
+                    e.printStack()
+                }
             }
         }
     }
