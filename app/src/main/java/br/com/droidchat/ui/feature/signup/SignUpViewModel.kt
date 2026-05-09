@@ -4,11 +4,11 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.droidchat.R
+import br.com.droidchat.data.network.model.NetworkException
 import br.com.droidchat.data.repository.AuthRepository
 import br.com.droidchat.model.CreateAccount
 import br.com.droidchat.ui.validator.FormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.ktor.utils.io.printStack
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,9 +93,13 @@ class SignUpViewModel @Inject constructor(
                     )
 
                     _formState.update { it.copy(isLoading = false) }
-                } catch (e: Exception) {
-                    // Handle error here
-                    e.printStack()
+                } catch (exception: Exception) {
+                    if (exception is NetworkException.ApiException) {
+                        // Handle api error
+                        exception.message
+                    } else {
+                        // handle generic error
+                    }
                 }
             }
         }

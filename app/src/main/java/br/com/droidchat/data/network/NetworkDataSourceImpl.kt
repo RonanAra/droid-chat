@@ -11,7 +11,6 @@ import javax.inject.Inject
 
 class NetworkDataSourceImpl @Inject constructor(
     private val httpClient: HttpClient
-
 ) : NetworkDataSource {
 
     override suspend fun signUp(request: CreateAccountRequest) {
