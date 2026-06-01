@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.droidchat.R
-import br.com.droidchat.data.network.model.NetworkException
 import br.com.droidchat.data.repository.AuthRepository
 import br.com.droidchat.model.CreateAccount
 import br.com.droidchat.ui.validator.FormValidator
@@ -76,30 +75,23 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun doSignUp() {
+        val state = formState.value
         if (isValidForm()) {
             viewModelScope.launch {
                 _formState.update { it.copy(isLoading = true) }
 
-                try {
-                    val state = formState.value
-                    authRepository.signUp(
-                        account = CreateAccount(
-                            username = "",
-                            password = "",
-                            firstName = state.firstName,
-                            lastName = state.lastName,
-                            profilePictureId = null
-                        )
+                authRepository.signUp(
+                    account = CreateAccount(
+                        username = "",
+                        password = "",
+                        firstName = state.firstName,
+                        lastName = state.lastName,
+                        profilePictureId = null
                     )
-
+                ).onSuccess {
                     _formState.update { it.copy(isLoading = false) }
-                } catch (exception: Exception) {
-                    if (exception is NetworkException.ApiException) {
-                        // Handle api error
-                        exception.message
-                    } else {
-                        // handle generic error
-                    }
+                }.onFailure {
+                    _formState.update { it.copy(isLoading = false) }
                 }
             }
         }
