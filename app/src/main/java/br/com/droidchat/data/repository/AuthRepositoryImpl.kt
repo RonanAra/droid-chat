@@ -30,7 +30,10 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signIn(userName: String, password: String) {
+    override suspend fun signIn(
+        userName: String,
+        password: String
+    ) {
         networkDataSource.signIn(
             request = AuthRequest(
                 username = userName,
