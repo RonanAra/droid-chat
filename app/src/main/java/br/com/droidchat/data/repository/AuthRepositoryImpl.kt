@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : AuthRepository {
 
     override suspend fun signUp(account: CreateAccount): Result<Unit> {
